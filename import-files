@@ -1,0 +1,21 @@
+#!/usr/bin/env zsh
+
+if [ -z "$1" ]; then
+    echo "Usage: import filelist"
+    exit 1
+fi
+
+set -ex
+for f in $(cat "$1"); do
+	echo $f; rm -rf src
+	if [[ "$f" =~ "\.zip$" ]]; then
+		unzip -q ../$f
+	else
+		tar xf ../$f
+	fi
+	if [ ! -d src ] ; then
+		mv */ src
+	fi
+	git add -A -f src
+	git commit -q -m "Import $f"
+done
